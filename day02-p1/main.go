@@ -14,39 +14,36 @@ func main() {
 	}
 	defer f.Close()
 
-	strs := []string{}
+	words := []string{}
 	s := bufio.NewScanner(f)
 	for s.Scan() {
-		strs = append(strs, s.Text())
+		words = append(words, s.Text())
 	}
-	fmt.Printf("%d\n", checksum(strs))
+	fmt.Printf("%d\n", checksum(words))
 }
 
-func checksum(strs []string) int {
-	if len(strs) == 0 {
-		return 0
-	}
+func checksum(words []string) int {
 	var twos, threes int
-	for _, str := range strs {
-		n2, n3 := stats(str)
-		twos += n2
-		threes += n3
-	}
-	return twos * threes
-}
-
-func stats(str string) (twos, threes int) {
-	stats := map[rune]int{}
-	for _, c := range str {
-		stats[c]++
-	}
-	for _, n := range stats {
-		switch n {
-		case 2:
-			twos = 1
-		case 3:
-			threes = 1
+	for _, w := range words {
+		counts := map[rune]int{}
+		for _, r := range w {
+			counts[r]++
+		}
+		var hasTwos, hasThrees bool
+		for _, c := range counts {
+			switch c {
+			case 2:
+				hasTwos = true
+			case 3:
+				hasThrees = true
+			}
+		}
+		if hasTwos {
+			twos++
+		}
+		if hasThrees {
+			threes++
 		}
 	}
-	return twos, threes
+	return twos * threes
 }
